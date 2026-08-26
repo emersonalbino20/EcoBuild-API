@@ -6,8 +6,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.Base import Base
 
-from TYPE_CHECKING:
+if TYPE_CHECKING:
     from models.user import UserModel
+    from models.plan import PlanModel
 
 class OrganizationModel(Base):
     __tablename__ = "organizations"
@@ -27,3 +28,6 @@ class OrganizationModel(Base):
                          )
     
     user: Mapped["UserModel"] = relationship(back_populates="orgs")
+    plans: Mapped[list["PlanModel"]] = relationship(
+                                                back_populates="organization",
+                                                cascade="all, delete-orphan")

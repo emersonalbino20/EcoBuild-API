@@ -9,6 +9,8 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from models.user import UserModel # type: ignore
 from models.organization import OrganizationModel # type: ignore
+from models.plan import PlanModel # type: ignore
+from models.analysis import AnalysisModel # type: ignore
 from db.Base import Base # type: ignore
 
 from alembic import context

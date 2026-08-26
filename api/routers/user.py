@@ -10,7 +10,6 @@ from db.Session import get_db
 from domain.user import User
 from schemas.user import CreateField, UpdateField, UserResponse
 from utils.response_util import to_response
-from utils.security import generate_pass_hash
 
 router = APIRouter(
     prefix="/users",
@@ -37,7 +36,7 @@ async def create_user(user: CreateField, db: AsyncSession = Depends(get_db)) -> 
     request = User(
         name=user.name,
         email=user.email,
-        password_hash=generate_pass_hash(user.password_hash)
+        password_hash=user.password_hash
     )
     result = await create_user_case(adapter, request)
 

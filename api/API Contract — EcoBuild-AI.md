@@ -142,9 +142,8 @@ Plan
 ├── id
 ├── organization_id
 ├── storage_ref
-├── file_name
-├── file_type
-├── status
+├── format
+├── size
 ├── created_at
 └── updated_at
 ```
@@ -900,7 +899,7 @@ The assistant response may be generated asynchronously or returned directly, dep
 /organizations
 /organizations/{organization_id}
 
-/organizations/{organization_id}/plans
+/plans/{organization_id}
 /plans
 /plans/{plan_id}
 /plans/{plan_id}/process

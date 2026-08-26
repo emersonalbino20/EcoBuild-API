@@ -26,12 +26,7 @@ async def update_organization_case(
     id: int,
     request: Organization
 ) -> Organization | None:
-
-    assert request.user_id is not None, "User ID must be provided"
-    is_user = await org.user_existing(request.user_id)
-    if not is_user:
-        raise NOT_FOUND(detail="User not found")
-    
+  
     is_org = await org.organization_existing(id)
     if not is_org:
         raise NOT_FOUND(detail="Organization not found")

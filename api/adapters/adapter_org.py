@@ -86,8 +86,10 @@ class AdapterOrganization(OrganizationRepository):
         )
 
     async def delete_organization(self, id: int) -> None:
-        db_org= self.db.get(OrganizationModel, id)
-
+        query = select(OrganizationModel).where(OrganizationModel.id == id)
+        result = await self.db.execute(query)
+        db_org = result.scalar_one_or_none()
+        
         await self.db.delete(db_org)
         await self.db.commit()
 
