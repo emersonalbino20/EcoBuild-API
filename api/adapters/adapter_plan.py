@@ -32,8 +32,6 @@ class AdapterPlan(PlanRepository):
         result = await self.db.execute(query)
         plan = result.scalar_one_or_none()
 
-        assert plan is not None
-
         return Plan(
             plan.id,
             plan.organization_id,

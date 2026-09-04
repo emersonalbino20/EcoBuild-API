@@ -6,6 +6,7 @@ from routers.user import router as user_router
 from routers.organization import router as organization_router
 from routers.plan import router as plan_router
 from routers.analysis import router as analysis_router
+from routers.material import router as material_router
 
 app = FastAPI(
     title="EcoBuild-AI API",
@@ -16,7 +17,8 @@ router_list = [
                 user_router, 
                 organization_router, 
                 plan_router,
-                analysis_router
+                analysis_router,
+                material_router
                 ]
 
 get_db()

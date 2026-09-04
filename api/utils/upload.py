@@ -12,7 +12,7 @@ class ValidationResult(TypedDict):
 class DocumentValidator:
     def __init__(self, max_size: int = 10 * 1024 * 1024):
         self.max_size = max_size
-        self.allowed_extensions = {'.pdf', '.txt', '.json'}
+        self.allowed_extensions = {'.png', '.jpeg'}
 
     async def validate_file(self, file: UploadFile) -> ValidationResult:
         result: ValidationResult = {"valid": True, "errors": []}

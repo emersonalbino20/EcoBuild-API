@@ -5,6 +5,7 @@ from pathlib import Path
 from adapters.adapter_plan import AdapterPlan
 from domain.use_cases.plan import (create_plan_case,
                                         get_plans_case,
+                                        get_plan_by_id_case,
                                         remove_plan_case
                                         )
 from db.Session import get_db
@@ -27,6 +28,13 @@ async def get_plans(org_id: int, db: AsyncSession = Depends(get_db)) -> list[Pla
       to_response(PlanResponse, plan)
       for plan in result
     ]
+
+@router.get("/org/{plan_id}", response_model=PlanResponse)
+async def get_plan(plan_id: int, db: AsyncSession = Depends(get_db)) -> PlanResponse:
+    adapter = AdapterPlan(db)
+    result = await get_plan_by_id_case(adapter, plan_id)
+
+    return to_response(PlanResponse, result)
 
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)

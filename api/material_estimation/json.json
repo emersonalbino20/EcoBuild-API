@@ -1,0 +1,16 @@
+materials=[
+MaterialItem(name='Cimento', quantity=220.0, unit='saco'),
+MaterialItem(name='Areia fina', quantity=12.0, unit='m³'),
+MaterialItem(name='Areia grossa', quantity=15.0, unit='m³'),
+MaterialItem(name='Brita nº 1', quantity=14.0, unit='m³'),
+MaterialItem(name='Tijolo cerâmico 9x19x19', quantity=4500.0, unit='unidade'),
+MaterialItem(name='Aço CA-50 10mm', quantity=650.0, unit='kg'),
+MaterialItem(name='Aço CA-60 5mm', quantity=300.0, unit='kg')
+]
+notes="The material estimation was performed based on the provided floor plan dimensions
+ and standard masonry and concrete structure practices for a Single Family House. 
+This estimate includes structural 
+materials (Cement, Sand, Gravel, Steel) 
+and wall construction materials (Bricks). 
+Total wall volume is approximately 22.03 m³ before door and window deductions. Cement matches the official catalog item 'Cimento' (saco).
+No wastage rates or financial totals are included here as they will be handled downstream."
