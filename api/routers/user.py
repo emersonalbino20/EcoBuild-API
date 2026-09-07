@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from adapters.adapter_user import AdapterUser
-from domain.use_cases.user import (create_user_case,
+from api.adapters.adapter_user import AdapterUser
+from api.domain.use_cases.user import (create_user_case,
                                     get_users_case,
                                     remove_user_case,
                                     update_user_case)
-from db.Session import get_db
-from domain.user import User
-from schemas.user import CreateField, UpdateField, UserResponse
-from utils.response_util import to_response
+from api.db.Session import get_db
+from api.domain.user import User
+from api.schemas.user import CreateField, UpdateField, UserResponse
+from api.utils.response_util import to_response
 
 router = APIRouter(
     prefix="/users",

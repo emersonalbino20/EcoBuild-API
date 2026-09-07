@@ -1,9 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from domain.ports import UserRepository
-from domain.user import User
-from models.user import UserModel
+from api.domain.ports import UserRepository
+from api.domain.user import User
+from api.models.user import UserModel
 
 class AdapterUser(UserRepository):
     def __init__(self, db: AsyncSession) -> None:

@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import Numeric, String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 
-from db.Base import Base
+from api.db.Base import Base
 
 class MaterialModel(Base):
     __tablename__ = "materials"
@@ -61,7 +61,7 @@ class MaterialModel(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
-        default=datetime.utcnow,
+        default=lambda: datetime.now(),
     )
 
     updated_at: Mapped[datetime] = mapped_column(

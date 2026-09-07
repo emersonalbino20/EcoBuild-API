@@ -1,12 +1,4 @@
-import sys
-from pathlib import Path
-import asyncio
-
 import httpx
-
-
-root = Path(__file__).resolve().parent.parent.parent
-sys.path.append(str(root))
 
 from api.schemas.material import MaterialResponse
 

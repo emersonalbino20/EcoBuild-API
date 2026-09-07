@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_serializer
 
-from utils.security import generate_pass_hash
+from api.utils.security import generate_pass_hash
 
 class CreateField(BaseModel):
     name: str = Field(..., min_length=2, max_length=50, examples=["John"])

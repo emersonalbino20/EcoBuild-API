@@ -1,6 +1,6 @@
-from domain.errors import NOT_FOUND
-from domain.material import Material
-from domain.ports import MaterialRepository
+from api.domain.errors import NOT_FOUND
+from api.domain.material import Material
+from api.domain.ports import MaterialRepository
 
 async def get_materials_case(
     material_repo: MaterialRepository,

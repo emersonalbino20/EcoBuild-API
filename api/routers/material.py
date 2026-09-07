@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from adapters.adapter_material import AdapterMaterial
-from domain.use_cases.material import (create_material_case,
+from api.adapters.adapter_material import AdapterMaterial
+from api.domain.use_cases.material import (create_material_case,
                                         get_materials_case,
                                         delete_material_case,
                                         update_material_case)
-from db.Session import get_db
-from domain.material import Material
-from schemas.material import CreateField, UpdateField, MaterialResponse
-from utils.response_util import to_response
+from api.db.Session import get_db
+from api.domain.material import Material
+from api.schemas.material import CreateField, UpdateField, MaterialResponse
+from api.utils.response_util import to_response
 
 router = APIRouter(
     prefix="/materials",

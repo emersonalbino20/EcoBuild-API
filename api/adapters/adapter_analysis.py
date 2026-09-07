@@ -1,59 +1,128 @@
+from uuid import UUID
+
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from domain.ports import AnalysisRepository
-from domain.analysis import Analysis
-from models.analysis import AnalysisModel
-from models.plan import PlanModel
+from api.domain.ports import AnalysisRepository
+from api.domain.analysis import Analysis
+from api.domain.material_list import MaterialList
+from api.domain.material_item import MaterialItem
+from api.models.analysis import AnalysisModel, MaterialListModel
+from api.models.plan import PlanModel
 
 class AdapterAnalysis(AnalysisRepository):
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
     async def get_analyses(self, plan_id: int) -> list[Analysis]:
-        query = select(AnalysisModel).where(AnalysisModel.plan_id == plan_id)
+        query = (
+            select(AnalysisModel)
+            .options(
+                selectinload(AnalysisModel.material_list).selectinload(
+                    MaterialListModel.materials
+                )
+            )
+            .where(AnalysisModel.plan_id == plan_id)
+        )
+
         result = await self.db.execute(query)
-        analyses = result.scalars().all()
+        analyses_orm = result.scalars().all()
 
         return [
             Analysis(
-                analysis.id,
-                analysis.plan_id,
-                analysis.parent_analysis_id or 0,
-                analysis.version,
-                int(analysis.estimated_cost or 0),
-                int(analysis.waste_percentage or 0),
-                int(analysis.co2_saved or 0),
-                analysis.status,
-                analysis.created_at
+                id=analysis.id,
+                plan_id=analysis.plan_id,
+                parent_analysis_id=analysis.parent_analysis_id,
+                status=analysis.status,
+                # Instancie MaterialListDomain explicitamente
+                material_list=(
+                    MaterialList(
+                        id=analysis.material_list.id,
+                        notes=analysis.material_list.notes,
+                        materials=[
+                            MaterialItem(
+                                id=item.id,
+                                material_list_id=item.material_list_id,
+                                name=item.name,
+                                quantity=item.quantity,
+                                unit=item.unit,
+                            )
+                            for item in analysis.material_list.materials
+                        ],
+                    )
+                    if analysis.material_list
+                    else None
+                ), # type: ignore
+                created_at=analysis.created_at,
             )
-            for analysis in analyses or []
+            for analysis in analyses_orm
         ]
 
-    async def get_analysis_by_id(self, id: int) -> Analysis:
-        query = select(AnalysisModel).where(AnalysisModel.id == id)
-        result = await self.db.execute(query)
-        analysis = result.scalar_one_or_none()
+    
+    async def get_analysis_by_id(self, id: UUID) -> Analysis | None:
+        query = (
+            select(AnalysisModel)
+            .options(
+                selectinload(AnalysisModel.material_list).selectinload(
+                    MaterialListModel.materials
+                )
+            )
+            .where(AnalysisModel.id == id)
+        )
 
-        assert analysis is not None
+        # Use .scalars() antes de pedir o objeto ORM único
+        result = await self.db.execute(query)
+        analysis = result.scalars().first()
+
+        if analysis is None:
+            return None  # Retorna None conforme a assinatura da porta
+
+        # Mapeamento seguro: com selectinload + .scalars(), os dados estão 100% em memória
+        material_list_domain = None
+        if analysis.material_list:
+            material_list_domain = MaterialList(
+                id=analysis.material_list.id,
+                notes=analysis.material_list.notes,
+                materials=[
+                    MaterialItem(
+                        id=item.id,
+                        material_list_id=item.material_list_id,
+                        name=item.name,
+                        quantity=item.quantity,
+                        unit=item.unit,
+                    )
+                    for item in analysis.material_list.materials
+                ],
+            )
 
         return Analysis(
-                        analysis.id,
-                        analysis.plan_id,
-                        analysis.parent_analysis_id or 0,
-                        analysis.version,
-                        int(analysis.estimated_cost or 0),
-                        int(analysis.waste_percentage or 0),
-                        int(analysis.co2_saved or 0),
-                        analysis.status,
-                        analysis.created_at
-                    )
+            id=analysis.id,
+            plan_id=analysis.plan_id,
+            parent_analysis_id=analysis.parent_analysis_id,
+            status=analysis.status,
+            material_list=material_list_domain, # type: ignore
+            created_at=analysis.created_at,
+        )
+
+    async def update_analysis(self, id: UUID, request: Analysis) -> None:
+            query = select(AnalysisModel).where(AnalysisModel.id == id)
+            result = await self.db.execute(query)
+            db_analysis = result.scalar_one_or_none()
+    
+            assert db_analysis is not None
+            db_analysis.status = request.status
+            db_analysis.material_list_id = request.material_list_id
+
+            await self.db.commit()
+            await self.db.refresh(db_analysis)
+
 
     async def create_analysis(self, request: Analysis) -> Analysis:
         db_analysis = AnalysisModel(
+            id=request.id,
             plan_id=request.plan_id,
             parent_analysis_id=request.parent_analysis_id,
-            version=request.version,
         )
         self.db.add(db_analysis)
         await self.db.commit()
@@ -62,12 +131,10 @@ class AdapterAnalysis(AnalysisRepository):
         return  Analysis(
                         db_analysis.id,
                         db_analysis.plan_id,
-                        db_analysis.parent_analysis_id or 0,
-                        db_analysis.version,
-                        int(db_analysis.estimated_cost or 0),
-                        int(db_analysis.waste_percentage or 0),
-                        int(db_analysis.co2_saved or 0),
+                        db_analysis.parent_analysis_id,
                         db_analysis.status,
+                        db_analysis.material_list, # type: ignore
+                        db_analysis.material_list_id, # type: ignore
                         db_analysis.created_at
                     )
 

@@ -2,7 +2,8 @@ import uuid
 import shutil
 from pathlib import Path
 from fastapi import UploadFile, HTTPException, status
-from utils.upload import DocumentValidator
+
+from api.utils.upload import DocumentValidator
 
 class DocumentStorageAdapter:
     def __init__(self, upload_dir: str = "uploads", max_size_mb: int = 5):

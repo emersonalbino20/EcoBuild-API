@@ -1,10 +1,10 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from domain.ports import OrganizationRepository
-from domain.organization import Organization
-from models.organization import OrganizationModel
-from models.user import UserModel
+from api.domain.ports import OrganizationRepository
+from api.domain.organization import Organization
+from api.models.organization import OrganizationModel
+from api.models.user import UserModel
 
 class AdapterOrganization(OrganizationRepository):
     def __init__(self, db: AsyncSession) -> None:

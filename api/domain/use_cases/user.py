@@ -1,6 +1,6 @@
-from domain.errors import NOT_FOUND
-from domain.user import User
-from domain.ports import UserRepository
+from api.domain.errors import NOT_FOUND
+from api.domain.user import User
+from api.domain.ports import UserRepository
 
 
 async def get_users_case(

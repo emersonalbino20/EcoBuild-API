@@ -1,10 +1,10 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from domain.ports import PlanRepository
-from domain.plan import Plan
-from models.plan import PlanModel
-from models.organization import OrganizationModel
+from api.domain.ports import PlanRepository
+from api.domain.plan import Plan
+from api.models.plan import PlanModel
+from api.models.organization import OrganizationModel
 
 class AdapterPlan(PlanRepository):
     def __init__(self, db: AsyncSession) -> None:

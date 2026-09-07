@@ -18,7 +18,7 @@ class MaterialItem(BaseModel):
 
 class MaterialList(BaseModel):
     materials: list[MaterialItem] = Field(
-        default_factory=list,
+        default_factory=lambda: list[MaterialItem](),
         description="Comprehensive list of estimated raw materials based on architectural quantities.",
     )
     notes: str | None = Field(

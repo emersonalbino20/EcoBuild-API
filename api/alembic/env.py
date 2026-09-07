@@ -12,6 +12,8 @@ from models.organization import OrganizationModel # type: ignore
 from models.plan import PlanModel # type: ignore
 from models.analysis import AnalysisModel # type: ignore
 from models.material import MaterialModel # type: ignore
+from models.analysis import MaterialListModel # type: ignore
+from models.analysis import MaterialItemModel # type: ignore
 from db.Base import Base # type: ignore
 
 from alembic import context
