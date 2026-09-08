@@ -1,8 +1,8 @@
-"""empty message
+"""Change column id uuid to id int
 
-Revision ID: 9bbff415362b
+Revision ID: 1e8ed9a6cdd0
 Revises: 
-Create Date: 2026-09-08 19:03:58.600189
+Create Date: 2026-09-08 22:56:44.598973
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '9bbff415362b'
+revision: str = '1e8ed9a6cdd0'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -27,7 +27,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('materials',
-    sa.Column('id', sa.Uuid(), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('category', sa.String(length=50), nullable=False),
     sa.Column('unit', sa.String(length=20), nullable=False),

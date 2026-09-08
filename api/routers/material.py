@@ -74,4 +74,5 @@ async def update_material(
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_material(id: int, db: AsyncSession = Depends(get_db)) -> None:
     adapter = AdapterMaterial(db)
+    
     await delete_material_case(adapter, id)

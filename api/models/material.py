@@ -10,10 +10,7 @@ from db.Base import Base
 class MaterialModel(Base):
     __tablename__ = "materials"
 
-    id: Mapped[UUID] = mapped_column(
-        primary_key=True,
-        default=uuid4,
-    )
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     name: Mapped[str] = mapped_column(
         String(100),

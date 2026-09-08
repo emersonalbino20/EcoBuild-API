@@ -85,6 +85,15 @@ class AdapterMaterial(MaterialRepository):
         result = await self.db.execute(query)
         db_material = result.scalar_one_or_none()
 
+        db_material.name = request.name
+        db_material.category = request.category
+        db_material.unit = request.unit
+        db_material.price = request.price
+        db_material.currency = request.currency
+        db_material.waste_rate = request.waste_rate
+        db_material.co2_factor = request.co2_factor
+        db_material.source = request.source
+
         await self.db.commit()
         await self.db.refresh(db_material)
 
@@ -109,3 +118,9 @@ class AdapterMaterial(MaterialRepository):
 
         await self.db.delete(db_material)
         await self.db.commit()
+
+    async def material_existing(self, id: int) -> bool:
+        db_material = await self.db.get(MaterialModel, id)
+        if db_material:
+            return True
+        return False

@@ -1,6 +1,5 @@
 from datetime import datetime
 from decimal import Decimal
-from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -91,7 +90,7 @@ class UpdateField(BaseModel):
 class MaterialResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: UUID
+    id: int
     name: str
     category: str
     unit: str

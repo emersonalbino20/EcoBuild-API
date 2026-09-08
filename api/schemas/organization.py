@@ -7,7 +7,7 @@ class CreateField(BaseModel):
     location: str = Field(..., min_length=8, max_length=50, examples=["street, city"])
 
 class UpdateField(BaseModel):
-    name: str = Field(..., min_length=4, max_digits=50, examples=["Banco Bai"])
+    name: str = Field(..., min_length=4, max_length=50, examples=["Banco Bai"])
     location: str = Field(..., min_length=8, max_length=50, examples=["street, city"])
 
 class OrganizationResponse(CreateField):

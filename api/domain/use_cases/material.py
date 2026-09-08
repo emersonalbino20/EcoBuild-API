@@ -28,7 +28,7 @@ async def update_material_case(
     request: Material
 ) -> Material:
 
-    is_material = await material_repo.get_material_by_id(id)
+    is_material = await material_repo.material_existing(id)
 
     if not is_material:
         raise NOT_FOUND(detail="Material not found")
@@ -40,9 +40,9 @@ async def delete_material_case(
     id: int
 ) -> None:
 
-    is_material = await material_repo.get_material_by_id(id)
+    is_material = await material_repo.material_existing(id)
 
     if not is_material:
         raise NOT_FOUND(detail="Material not found")
-
+    
     return await material_repo.delete_material(id)
