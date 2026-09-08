@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import Numeric, String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 
-from api.db.Base import Base
+from db.Base import Base
 
 class MaterialModel(Base):
     __tablename__ = "materials"

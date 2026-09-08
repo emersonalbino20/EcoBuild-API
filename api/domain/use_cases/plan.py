@@ -1,6 +1,6 @@
-from api.domain.errors import NOT_FOUND
-from api.domain.plan import Plan
-from api.domain.ports import PlanRepository
+from domain.errors import NOT_FOUND
+from domain.plan import Plan
+from domain.ports import PlanRepository
 
 async def get_plans_case(
     plan_repo: PlanRepository,

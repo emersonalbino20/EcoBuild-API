@@ -1,10 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.domain.ports import OrganizationRepository
-from api.domain.organization import Organization
-from api.models.organization import OrganizationModel
-from api.models.user import UserModel
+from domain.ports import OrganizationRepository
+from domain.organization import Organization
+from models.organization import OrganizationModel
 
 class AdapterOrganization(OrganizationRepository):
     def __init__(self, db: AsyncSession) -> None:
@@ -18,7 +17,6 @@ class AdapterOrganization(OrganizationRepository):
         return [
             Organization(
                 org.id,
-                org.user_id,
                 org.name,
                 org.location,
                 org.created_at,
@@ -36,7 +34,6 @@ class AdapterOrganization(OrganizationRepository):
         
         return Organization(
             organization.id,
-            organization.user_id,
             organization.name,
             organization.location,
             organization.created_at,
@@ -45,7 +42,6 @@ class AdapterOrganization(OrganizationRepository):
 
     async def create_organization(self, request: Organization) -> Organization:
         db_organization = OrganizationModel(
-            user_id=request.user_id,
             name=request.name,
             location=request.location
         )
@@ -55,7 +51,6 @@ class AdapterOrganization(OrganizationRepository):
 
         return Organization(
             db_organization.id,
-            db_organization.user_id,
             db_organization.name,
             db_organization.location,
             db_organization.created_at,
@@ -78,7 +73,6 @@ class AdapterOrganization(OrganizationRepository):
 
         return Organization(
             db_organization.id,
-            db_organization.user_id,
             db_organization.name,
             db_organization.location,
             db_organization.created_at,
@@ -92,12 +86,6 @@ class AdapterOrganization(OrganizationRepository):
         
         await self.db.delete(db_org)
         await self.db.commit()
-
-    async def user_existing(self, user_id: int) -> bool:
-        db_user = await self.db.get(UserModel, user_id)
-        if db_user:
-            return True
-        return False
 
     async def organization_existing(self, id: int) -> bool:
         db_organization = await self.db.get(OrganizationModel, id)

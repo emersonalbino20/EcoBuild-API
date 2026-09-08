@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field, ConfigDict
 
-from api.domain.analysis import AnalysisStatus
+from domain.analysis import AnalysisStatus
 
 from datetime import datetime
 from typing import List, Optional

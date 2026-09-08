@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.adapters.adapter_org import AdapterOrganization
-from api.domain.use_cases.organization import (create_organization_case,
+from adapters.adapter_org import AdapterOrganization
+from domain.use_cases.organization import (create_organization_case,
                                             get_organizations_case,
                                             remove_organization_case,
                                             update_organization_case)
-from api.db.Session import get_db
-from api.domain.organization import Organization
-from api.schemas.organization import CreateField, UpdateField, OrganizationResponse
-from api.utils.response_util import to_response
+from db.Session import get_db
+from domain.organization import Organization
+from schemas.organization import CreateField, UpdateField, OrganizationResponse
+from utils.response_util import to_response
 
 router = APIRouter(
     prefix="/organizations",
@@ -37,7 +37,6 @@ async def create_organization(
 ) -> OrganizationResponse:
     adapter = AdapterOrganization(db)
     request = Organization(
-        user_id=organization.user_id,
         name=organization.name,
         location=organization.location
     )

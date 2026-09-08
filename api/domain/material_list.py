@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from uuid import UUID
 
 
-from api.domain.material_item import MaterialItem
+from domain.material_item import MaterialItem
 
 
 @dataclass(frozen=True, slots=True)

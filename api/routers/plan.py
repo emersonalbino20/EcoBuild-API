@@ -2,17 +2,17 @@ from fastapi import APIRouter, Depends, File, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from pathlib import Path
 
-from api.adapters.adapter_plan import AdapterPlan
-from api.domain.use_cases.plan import (create_plan_case,
+from adapters.adapter_plan import AdapterPlan
+from domain.use_cases.plan import (create_plan_case,
                                         get_plans_case,
                                         get_plan_by_id_case,
                                         remove_plan_case
                                         )
-from api.db.Session import get_db
-from api.adapters.adapter_storage import DocumentStorageAdapter
-from api.domain.plan import Plan
-from api.schemas.plan import PlanResponse
-from api.utils.response_util import to_response
+from db.Session import get_db
+from adapters.adapter_storage import DocumentStorageAdapter
+from domain.plan import Plan
+from schemas.plan import PlanResponse
+from utils.response_util import to_response
 
 router = APIRouter(
     prefix="/plans",

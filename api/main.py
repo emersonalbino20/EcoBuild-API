@@ -1,12 +1,12 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from api.db.Session import get_db
-from api.routers.user import router as user_router
-from api.routers.organization import router as organization_router
-from api.routers.plan import router as plan_router
-from api.routers.analysis import router as analysis_router
-from api.routers.material import router as material_router
+from db.Session import get_db
+from routers.organization import router as organization_router
+from routers.plan import router as plan_router
+from routers.analysis import router as analysis_router
+from routers.material import router as material_router
 
 app = FastAPI(
     title="EcoBuild-AI API",
@@ -14,12 +14,19 @@ app = FastAPI(
 )
 
 router_list = [ 
-                user_router, 
                 organization_router, 
                 plan_router,
                 analysis_router,
                 material_router
                 ]
+
+app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,
+        allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_headers=["*"]
+        )
 
 get_db()
 

@@ -3,7 +3,6 @@ from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 
 class CreateField(BaseModel):
-    user_id: int = Field(..., gt=0)
     name: str = Field(..., min_length=4, max_length=50, examples=["Banco Bai"])
     location: str = Field(..., min_length=8, max_length=50, examples=["street, city"])
 

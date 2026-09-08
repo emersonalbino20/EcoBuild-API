@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 import os
 from pathlib import Path
 
@@ -8,19 +9,21 @@ from pydantic_ai.models.fallback import FallbackModel
 
 from .schemas.estimate_data import MaterialList, SYSTEM_PROMPT
 from .utils.fetch import fetch_available_materials
-from api.plan_extractor.agent_extractor import process_architectural_plan, PlanData
-from api.schemas.material import MaterialResponse
+from plan_extractor.agent_extractor import process_architectural_plan, PlanData
+from schemas.material import MaterialResponse
 
 model_3_5 = 'google:gemini-3.5-flash'
 model_3_5_lite = 'google:gemini-3.5-flash-lite'  
 model_3_1_lite = 'google:gemini-3.1-flash-lite'      
 model_3_8_lite = 'google:gemini-3.8-flash-lite'  
 model_3_6_lite = 'google:gemini-3.6-flash-lite'             
-model_3_7_lite = 'google:gemini-3.7-flash-lite' 
+model_3_7_lite = 'google:gemini-3.7-flash-lite'
+model_3_6 = 'google:gemini-3.6-flash'
 model_3_lite = 'google:gemini-3-flash-lite'            
 
 # 2. Encapsular no FallbackModel
 fallback_model = FallbackModel(
+    model_3_6,
     model_3_5,
     model_3_5_lite,
     model_3_1_lite,
@@ -33,7 +36,7 @@ load_dotenv()
 @dataclass
 class EstimationDeps:
     file_path: Path
-
+    format: str
 
 google_api_key = os.getenv("GOOGLE_API_KEY")
 if google_api_key is None:
@@ -49,13 +52,14 @@ agent_estimation: Agent[EstimationDeps, MaterialList] = Agent(
 @agent_estimation.tool
 async def get_plant_info(ctx: RunContext[EstimationDeps]) -> PlanData:
     img_path: Path = ctx.deps.file_path
+    format: str = ctx.deps.format
 
     if not img_path.exists():
         raise FileNotFoundError(
             f"Arquivo de planta não localizado em: {img_path}"
         )
 
-    return await process_architectural_plan(str(img_path))
+    return  await process_architectural_plan(str(img_path), format)
 
 @agent_estimation.tool_plain
 async def get_catalog_materials() -> list[MaterialResponse]:
@@ -64,7 +68,7 @@ async def get_catalog_materials() -> list[MaterialResponse]:
     return materials
 
 
-async def get_estimation(file_path: str) -> MaterialList:
+async def get_estimation(file_path: str, format: str) -> MaterialList:
     path_obj = Path(file_path)
 
     prompt = (
@@ -73,7 +77,7 @@ async def get_estimation(file_path: str) -> MaterialList:
     )
 
     result = await agent_estimation.run(
-        prompt, deps=EstimationDeps(file_path=path_obj)
+        prompt, deps=EstimationDeps(file_path=path_obj, format=format)
     )
 
     return result.output

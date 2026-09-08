@@ -1,8 +1,8 @@
 from uuid import UUID
 
-from api.domain.errors import NOT_FOUND
-from api.domain.analysis import Analysis
-from api.domain.ports import AnalysisRepository
+from domain.errors import NOT_FOUND
+from domain.analysis import Analysis
+from domain.ports import AnalysisRepository
 
 async def get_analyses_case(
     analysis_repo: AnalysisRepository,

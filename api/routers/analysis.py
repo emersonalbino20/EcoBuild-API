@@ -3,23 +3,22 @@ from uuid import uuid4, UUID
 from fastapi import APIRouter, Depends, status, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.adapters.adapter_analysis import AdapterAnalysis
-from api.adapters.adapter_material_list import AdapterMaterialList
-from api.adapters.adapter_material_item import AdapterMaterialItem
-from api.domain.use_cases.analysis import (create_analysis_case, update_analysis_case,
+from adapters.adapter_analysis import AdapterAnalysis
+from adapters.adapter_material_list import AdapterMaterialList
+from adapters.adapter_material_item import AdapterMaterialItem
+from domain.use_cases.analysis import (create_analysis_case, update_analysis_case,
                                         get_analyses_case)
-from api.domain.use_cases.material_list import create_material_list_case
-from api.domain.use_cases.material_item import create_material_item_case
-from api.material_estimation.agent_estimation import get_estimation
-from api.material_estimation.schemas.estimate_data import MaterialList as AgentResponse
-
-from api.db.Session import get_db
-from api.domain.analysis import Analysis, AnalysisStatus
-from api.domain.material_list import MaterialList
-from api.domain.material_item import MaterialItem
-from api.schemas.analysis import CreateField, AnalysisResponse
-from api.routers.plan import get_plan
-from api.utils.response_util import to_response
+from domain.use_cases.material_list import create_material_list_case
+from domain.use_cases.material_item import create_material_item_case
+from material_estimation.agent_estimation import get_estimation
+from material_estimation.schemas.estimate_data import MaterialList as AgentResponse
+from db.Session import get_db
+from domain.analysis import Analysis, AnalysisStatus
+from domain.material_list import MaterialList
+from domain.material_item import MaterialItem
+from schemas.analysis import CreateField, AnalysisResponse
+from routers.plan import get_plan
+from utils.response_util import to_response
 
 router = APIRouter(
     prefix="/analyses",
@@ -39,9 +38,10 @@ async def get_analyses(plan_id: int, db: AsyncSession = Depends(get_db)) -> list
 async def generate_material(
         request: Analysis, 
         storage_reference: str,
+        format: str,
         db: AsyncSession = Depends(get_db)):
     try:
-        agent: AgentResponse = await get_estimation(storage_reference)
+        agent: AgentResponse = await get_estimation(storage_reference, format)
 
         list_id: UUID = uuid4()
 
@@ -108,6 +108,6 @@ async def create_analysis(
 
     plan = await get_plan(analysis.plan_id, db)
 
-    tasks.add_task(generate_material, request, plan.storage_reference, db)
+    tasks.add_task(generate_material, request, plan.storage_reference, plan.format, db)
 
     return to_response(AnalysisResponse, result)
