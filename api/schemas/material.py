@@ -91,14 +91,13 @@ class MaterialResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    name: str
-    category: str
-    unit: str
-    price: Decimal
-    currency: str
-    waste_rate: Decimal
-    co2_factor: Decimal
-    source: str | None
-
+    name: str = Field(min_length=1, max_length=100, examples=["Cement"])
+    category: str = Field(min_length=1, max_length=50, examples=["Concrete"])
+    unit: str = Field(min_length=1, max_length=20, examples=["m²", "kg", "l"])
+    price: Decimal = Field(ge=0, decimal_places=2, examples=["0.00"])
+    currency: str = Field(min_length=3, max_length=3, examples=["AOA"])
+    waste_rate: Decimal = Field(ge=0, le=1, decimal_places=4, examples=["0.0000"])
+    co2_factor: Decimal = Field(ge=0, decimal_places=6, examples=["0.000000"])
+    source: str | None = Field(default=None, max_length=255, examples=["https://example.com/materials/cement"])
     created_at: datetime
     updated_at: datetime
