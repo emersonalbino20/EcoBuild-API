@@ -81,7 +81,7 @@ success "Python $PYTHON_VERSION"
 info "Verificando uv..."
 
 if ! command -v uv >/dev/null 2>&1; then
-    error "uv não está instalado.
+    error "uv não está instalado."
 
     curl -LsSf https://astral.sh/uv/install.sh | sh
 
