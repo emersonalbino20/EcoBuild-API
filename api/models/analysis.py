@@ -6,11 +6,11 @@ from sqlalchemy import DateTime, Float, String, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
-from domain.analysis import AnalysisStatus
-from db.Base import Base
+from api.domain.analysis import AnalysisStatus
+from api.db.Base import Base
 
 if TYPE_CHECKING:
-    from models.plan import PlanModel
+    from api.models.plan import PlanModel
 
 class AnalysisModel(Base):
     __tablename__ = "analyses"

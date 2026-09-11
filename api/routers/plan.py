@@ -1,18 +1,20 @@
-from fastapi import APIRouter, Depends, File, UploadFile, status
-from sqlalchemy.ext.asyncio import AsyncSession
 from pathlib import Path
 
-from adapters.adapter_plan import AdapterPlan
-from domain.use_cases.plan import (create_plan_case,
+from fastapi import APIRouter, Depends, File, UploadFile, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from api.adapters.adapter_plan import AdapterPlan
+from api.config import settings
+from api.domain.use_cases.plan import (create_plan_case,
                                         get_plans_case,
                                         get_plan_by_id_case,
                                         remove_plan_case
                                         )
-from db.Session import get_db
-from adapters.adapter_storage import DocumentStorageAdapter
-from domain.plan import Plan
-from schemas.plan import PlanResponse
-from utils.response_util import to_response
+from api.db.Session import get_db
+from api.adapters.adapter_storage import DocumentStorageAdapter
+from api.domain.plan import Plan
+from api.schemas.plan import PlanResponse
+from api.utils.response_util import to_response
 
 router = APIRouter(
     prefix="/plans",
@@ -36,11 +38,12 @@ async def get_plan(plan_id: int, db: AsyncSession = Depends(get_db)) -> PlanResp
 
     return to_response(PlanResponse, result)
 
-UPLOAD_DIR = Path("api/uploads")
+UPLOAD_DIR = Path(__file__).resolve().parents[2] / settings.UPLOAD_DIR
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
+
 def get_storage_adapter() -> DocumentStorageAdapter:
-    return DocumentStorageAdapter(upload_dir="api/uploads", max_size_mb=5)
+    return DocumentStorageAdapter(upload_dir=str(UPLOAD_DIR), max_size_mb=5)
 
 @router.post(
   "/{organization_id}",

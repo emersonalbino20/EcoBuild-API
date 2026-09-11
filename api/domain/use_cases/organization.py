@@ -1,6 +1,6 @@
-from domain.errors import NOT_FOUND
-from domain.organization import Organization
-from domain.ports import OrganizationRepository
+from api.domain.errors import NOT_FOUND
+from api.domain.organization import Organization
+from api.domain.ports import OrganizationRepository
 
 async def get_organizations_case(
     org: OrganizationRepository,

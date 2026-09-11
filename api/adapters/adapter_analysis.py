@@ -4,12 +4,12 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from domain.ports import AnalysisRepository
-from domain.analysis import Analysis
-from domain.material_list import MaterialList
-from domain.material_item import MaterialItem
-from models.analysis import AnalysisModel, MaterialListModel
-from models.plan import PlanModel
+from api.domain.analysis import Analysis
+from api.domain.material_list import MaterialList
+from api.domain.ports import AnalysisRepository
+from api.domain.material_item import MaterialItem
+from api.models.analysis import AnalysisModel, MaterialListModel
+from api.models.plan import PlanModel
 
 class AdapterAnalysis(AnalysisRepository):
     def __init__(self, db: AsyncSession) -> None:

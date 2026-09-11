@@ -1,5 +1,5 @@
-from domain.material_item import MaterialItem
-from domain.ports import MaterialItemRepository
+from api.domain.material_item import MaterialItem
+from api.domain.ports import MaterialItemRepository
 
 async def create_material_item_case(
     material_repo: MaterialItemRepository, requests: list[MaterialItem]

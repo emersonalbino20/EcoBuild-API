@@ -1,15 +1,11 @@
 import os
-import sys
-from pathlib import Path
 
 from dotenv import load_dotenv
 from pydantic_ai import Agent, BinaryContent
 from pydantic_ai.models.fallback import FallbackModel
 
-root = Path(__file__).resolve().parent.parent.parent
-sys.path.append(str(root))
-
-from plan_extractor.schemas.plan_data import PlanData, SYSTEM_PROMPT
+from api.config import require_google_api_key
+from api.plan_extractor.schemas.plan_data import PlanData, SYSTEM_PROMPT
 
 model_3_5 = 'google:gemini-3.5-flash'
 model_3_5_lite = 'google:gemini-3.5-flash-lite'  
@@ -31,10 +27,8 @@ fallback_model = FallbackModel(
 )
 
 load_dotenv()
-google_api_key = os.getenv("GOOGLE_API_KEY")
-if google_api_key is None:
-    raise RuntimeError("GOOGLE_API_KEY is not configured")
-os.environ['GOOGLE_API_KEY'] = google_api_key
+google_api_key = require_google_api_key()
+os.environ["GOOGLE_API_KEY"] = google_api_key
 
 agent_extractor = Agent(
         fallback_model,
