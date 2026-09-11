@@ -1,27 +1,33 @@
-import os
-from dotenv import load_dotenv
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from collections.abc import AsyncIterator
 
-load_dotenv()
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-database_url = os.getenv("DATABASE_URL")
+from api.config import get_database_url
 
-if not database_url:
-  raise ValueError("Env variable DATABASE_URL not set")
+engine = None
+AsyncSessionLocal = None
 
-if database_url:
-  if database_url.startswith("postgresql://"):
-    database_url = database_url.replace("postgresql://", "postgresql+asyncpg://")
 
-engine = create_async_engine(database_url)
+def _get_session_factory() -> async_sessionmaker[AsyncSession]:
+    global engine, AsyncSessionLocal
 
-AsyncSessionLocal = async_sessionmaker(
-	bind=engine,
-	class_=AsyncSession,
-	expire_on_commit=False
-	)
+    if AsyncSessionLocal is None:
+        database_url = get_database_url()
+        if database_url.startswith("postgresql://"):
+            database_url = database_url.replace("postgresql://", "postgresql+asyncpg://")
 
-async def get_db():
-  async with AsyncSessionLocal() as db:
-    yield db
+        engine = create_async_engine(database_url, pool_pre_ping=True)
+        AsyncSessionLocal = async_sessionmaker(
+            bind=engine,
+            class_=AsyncSession,
+            expire_on_commit=False,
+        )
+
+    return AsyncSessionLocal
+
+
+async def get_db() -> AsyncIterator[AsyncSession]:
+    session_factory = _get_session_factory()
+    async with session_factory() as db:
+        yield db
 

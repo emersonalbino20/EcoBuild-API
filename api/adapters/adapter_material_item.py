@@ -1,8 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from domain.ports import MaterialItemRepository
-from domain.material_item import MaterialItem
-from models.analysis import MaterialItemModel
+from api.domain.ports import MaterialItemRepository
+from api.domain.material_item import MaterialItem
+from api.models.analysis import MaterialItemModel
 
 class AdapterMaterialItem(MaterialItemRepository):
 

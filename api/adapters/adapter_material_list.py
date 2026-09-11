@@ -1,8 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from domain.ports import MaterialListRepository
-from domain.material_list import MaterialList
-from models.analysis import MaterialListModel
+from api.domain.ports import MaterialListRepository
+from api.domain.material_list import MaterialList
+from api.models.analysis import MaterialListModel
 
 class AdapterMaterialList(MaterialListRepository):
     def __init__(self, db: AsyncSession) -> None:

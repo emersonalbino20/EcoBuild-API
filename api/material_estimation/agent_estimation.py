@@ -7,10 +7,11 @@ from dotenv import load_dotenv
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.fallback import FallbackModel
 
-from .schemas.estimate_data import MaterialList, SYSTEM_PROMPT
-from .utils.fetch import fetch_available_materials
-from plan_extractor.agent_extractor import process_architectural_plan, PlanData
-from schemas.material import MaterialResponse
+from api.config import require_google_api_key, settings
+from api.material_estimation.schemas.estimate_data import MaterialList, SYSTEM_PROMPT
+from api.material_estimation.utils.fetch import fetch_available_materials
+from api.plan_extractor.agent_extractor import PlanData, process_architectural_plan
+from api.schemas.material import MaterialResponse
 
 model_3_5 = 'google:gemini-3.5-flash'
 model_3_5_lite = 'google:gemini-3.5-flash-lite'  
@@ -33,15 +34,16 @@ fallback_model = FallbackModel(
 )
 
 load_dotenv()
+
+
 @dataclass
 class EstimationDeps:
     file_path: Path
     format: str
 
-google_api_key = os.getenv("GOOGLE_API_KEY")
-if google_api_key is None:
-    raise RuntimeError("GOOGLE_API_KEY is not set")
-os.environ['GOOGLE_API_KEY'] = google_api_key
+
+google_api_key = require_google_api_key()
+os.environ["GOOGLE_API_KEY"] = google_api_key
 
 agent_estimation: Agent[EstimationDeps, MaterialList] = Agent(
         fallback_model,
@@ -64,7 +66,8 @@ async def get_plant_info(ctx: RunContext[EstimationDeps]) -> PlanData:
 @agent_estimation.tool_plain
 async def get_catalog_materials() -> list[MaterialResponse]:
     """Fetches the official catalog of available construction materials, including prices, currency, waste rates, and specs."""
-    materials = await fetch_available_materials('http://127.0.0.1:8000/materials/')
+    materials_url = f"{settings.API_BASE_URL.rstrip('/')}/materials/"
+    materials = await fetch_available_materials(materials_url)
     return materials
 
 

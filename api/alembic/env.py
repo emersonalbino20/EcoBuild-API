@@ -1,5 +1,3 @@
-import os
-from dotenv import load_dotenv
 import asyncio
 from logging.config import fileConfig
 
@@ -7,27 +5,21 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from models.organization import OrganizationModel # type: ignore
-from models.plan import PlanModel # type: ignore
-from models.analysis import AnalysisModel # type: ignore
-from models.material import MaterialModel # type: ignore
-from models.analysis import MaterialListModel # type: ignore
-from models.analysis import MaterialItemModel # type: ignore
-from db.Base import Base # type: ignore
-
 from alembic import context
 
-load_dotenv()
-database_url = os.getenv("DATABASE_URL")
+from api.config import get_database_url
+from api.db.Base import Base
+from api.models.analysis import AnalysisModel, MaterialItemModel, MaterialListModel  # noqa: F401
+from api.models.material import MaterialModel  # noqa: F401
+from api.models.organization import OrganizationModel  # noqa: F401
+from api.models.plan import PlanModel  # noqa: F401
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
 config = context.config
 
-if database_url:
-    if database_url.startswith("postgresql://"):
-      database_url = database_url.replace("postgresql://", "postgresql+asyncpg://")
-    config.set_main_option("sqlalchemy.url", database_url)
+database_url = get_database_url()
+if database_url.startswith("postgresql://"):
+    database_url = database_url.replace("postgresql://", "postgresql+asyncpg://")
+config.set_main_option("sqlalchemy.url", database_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

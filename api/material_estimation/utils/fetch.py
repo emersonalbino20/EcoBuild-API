@@ -1,6 +1,6 @@
 import httpx
 
-from schemas.material import MaterialResponse
+from api.schemas.material import MaterialResponse
 
 async def fetch_available_materials(url: str) -> list[MaterialResponse]:
     """Busca a lista de materiais cadastrados e seus custos/taxas na API local."""

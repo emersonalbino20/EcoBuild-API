@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from db.Base import Base
+from api.db.Base import Base
 
 if TYPE_CHECKING:
-    from models.organization import OrganizationModel
-    from models.analysis import AnalysisModel
+    from api.models.organization import OrganizationModel
+    from api.models.analysis import AnalysisModel
 
 class PlanModel(Base):
     __tablename__ = "plans"
