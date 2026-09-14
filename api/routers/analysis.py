@@ -110,4 +110,10 @@ async def create_analysis(
 
     tasks.add_task(generate_material, request, plan.storage_reference, plan.format, db)
 
+    path = Path(plan.storage_reference)
+
+    print("=== CREATE ANALYSIS ===", flush=True)
+    print(f"storage_reference: {plan.storage_reference}", flush=True)
+    print(f"exists: {path.exists()}", flush=True)
+
     return to_response(AnalysisResponse, result)
