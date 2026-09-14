@@ -60,10 +60,12 @@ async def get_plant_info(ctx: RunContext[EstimationDeps]) -> PlanData:
     print(f"img_path: {img_path}", flush=True)
     print(f"exists: {img_path.exists()}", flush=True)
 
+    """
     if not img_path.exists():
         raise FileNotFoundError(
             f"Arquivo de planta não localizado em: {img_path}"
         )
+    """
 
     return  await process_architectural_plan(str(img_path), format)
 
