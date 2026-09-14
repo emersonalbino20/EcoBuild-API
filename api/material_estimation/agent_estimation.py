@@ -82,13 +82,12 @@ async def get_estimation(file_path: str, format: str) -> MaterialList:
     path_obj = Path(file_path)
 
     prompt = (
-        "What is your name?"
+        "Calculate the full material estimate for the architectural floor plan "
+        "by extracting its data first using the available plant info tool."
     )
 
     result = await agent_estimation.run(
         prompt, deps=EstimationDeps(file_path=path_obj, format=format)
     )
-
-    print(f"result: {result}")
 
     return result.output
