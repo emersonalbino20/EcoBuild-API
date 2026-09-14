@@ -56,6 +56,10 @@ async def get_plant_info(ctx: RunContext[EstimationDeps]) -> PlanData:
     img_path: Path = ctx.deps.file_path
     format: str = ctx.deps.format
 
+    print("=== GET PLANT INFO ===", flush=True)
+    print(f"img_path: {img_path}", flush=True)
+    print(f"exists: {img_path.exists()}", flush=True)
+
     if not img_path.exists():
         raise FileNotFoundError(
             f"Arquivo de planta não localizado em: {img_path}"
@@ -72,6 +76,9 @@ async def get_catalog_materials() -> list[MaterialResponse]:
 
 
 async def get_estimation(file_path: str, format: str) -> MaterialList:
+    print("=== GET ESTIMATION ===", flush=True)
+    print(f"file_path: {file_path}", flush=True)
+
     path_obj = Path(file_path)
 
     prompt = (

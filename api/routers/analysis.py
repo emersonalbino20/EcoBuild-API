@@ -41,6 +41,11 @@ async def generate_material(
         storage_reference: str,
         format: str,
         db: AsyncSession = Depends(get_db)):
+
+    print("=== GENERATE MATERIAL ===", flush=True)
+    print(f"request.id: {request.id}", flush=True)
+    print(f"storage_reference: {storage_reference}", flush=True)
+    print(f"format: {format}", flush=True)
     try:
         agent: AgentResponse = await get_estimation(storage_reference, format)
 
