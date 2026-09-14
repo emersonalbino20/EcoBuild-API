@@ -60,12 +60,10 @@ async def get_plant_info(ctx: RunContext[EstimationDeps]) -> PlanData:
     print(f"img_path: {img_path}", flush=True)
     print(f"exists: {img_path.exists()}", flush=True)
 
-    """
     if not img_path.exists():
         raise FileNotFoundError(
             f"Arquivo de planta não localizado em: {img_path}"
         )
-    """
 
     return  await process_architectural_plan(str(img_path), format)
 
@@ -73,7 +71,7 @@ async def get_plant_info(ctx: RunContext[EstimationDeps]) -> PlanData:
 async def get_catalog_materials() -> list[MaterialResponse]:
     """Fetches the official catalog of available construction materials, including prices, currency, waste rates, and specs."""
     materials_url = f"{settings.API_BASE_URL.rstrip('/')}/materials/"
-    materials = await fetch_available_materials(materials_url)
+    materials = await fetch_available_materials('https://ecobuild-ai.onrender.com/materials/')
     return materials
 
 
@@ -84,12 +82,13 @@ async def get_estimation(file_path: str, format: str) -> MaterialList:
     path_obj = Path(file_path)
 
     prompt = (
-        "Calculate the full material estimate for the architectural floor plan "
-        "by extracting its data first using the available plant info tool."
+        "What is your name?"
     )
 
     result = await agent_estimation.run(
         prompt, deps=EstimationDeps(file_path=path_obj, format=format)
     )
+
+    print(f"result: {result}")
 
     return result.output
