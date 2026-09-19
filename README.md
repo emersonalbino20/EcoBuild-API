@@ -1,21 +1,21 @@
 # EcoBuild-AI
 
-## Requisitos
+## Requirements
 
 - Python 3.12
-- `uv` instalado
-- PostgreSQL 14+ (local ou gerenciado)
-- chave da Google AI / Gemini configurada em `GOOGLE_API_KEY`
+- `uv` installed
+- PostgreSQL 14+ (local or managed)
+- Google AI / Gemini key configured in `GOOGLE_API_KEY`
 
-## Configuração local
+## Local setup
 
-Copie o exemplo de variáveis de ambiente:
+Copy the environment variable template:
 
 ```bash
 cp .env.example .env
 ```
 
-Edite o `.env` com os valores do seu ambiente local. O arquivo `.env` não deve ser enviado ao Git.
+Edit `.env` with the values for your local environment. Do not commit `.env` to Git.
 
 Exemplo:
 
@@ -28,7 +28,7 @@ UPLOAD_DIR=api/uploads
 CORS_ALLOWED_ORIGINS=*
 ```
 
-## Dependências com `uv`
+## Dependencies with `uv`
 
 ```bash
 uv sync --frozen
@@ -36,13 +36,13 @@ uv sync --frozen
 
 ## Migrations
 
-Antes de iniciar a API, aplique as migrations do Alembic:
+Before starting the API, apply the Alembic migrations:
 
 ```bash
 uv run alembic upgrade head
 ```
 
-## Executando a API localmente
+## Running the API locally
 
 ```bash
 uv run uvicorn api.main:app --reload
@@ -54,9 +54,9 @@ Ou diretamente:
 uv run uvicorn api.main:app --host 0.0.0.0 --port $PORT
 ```
 
-## Preparando PostgreSQL para produção
+## Preparing PostgreSQL for production
 
-Use um PostgreSQL gerenciado (ex.: Render Postgres) e defina `DATABASE_URL` com a URL completa do banco.
+Use a managed PostgreSQL instance (for example, Render Postgres) and set `DATABASE_URL` to the complete database URL.
 
 Exemplo conceptual:
 
@@ -64,13 +64,13 @@ Exemplo conceptual:
 DATABASE_URL=postgresql://user:password@host:5432/ecobuild
 ```
 
-A aplicação usa SQLAlchemy + asyncpg, logo o driver compatível é o `postgresql+asyncpg://...` quando necessário. O projeto converte automaticamente URLs `postgresql://` para o driver correto.
+The application uses SQLAlchemy and asyncpg, so the compatible driver is `postgresql+asyncpg://...` when required. The project automatically converts `postgresql://` URLs to the correct driver.
 
 ## Deployment
 
 ### Render
 
-Sem Docker. O projeto foi preparado para deploy direto com Python e `uv`.
+No Docker is required. The project is prepared for direct deployment with Python and `uv`.
 
 Build command:
 
@@ -99,11 +99,11 @@ Configure no Render, em Environment Variables, apenas:
 - `UPLOAD_DIR`
 - `CORS_ALLOWED_ORIGINS`
 
-Você também pode usar um `render.yaml` simples para declarar o serviço como código.
+You can also use a simple `render.yaml` file to declare the service as code.
 
 ## Health check
 
-A aplicação expõe:
+The application exposes:
 
 ```http
 GET /health
@@ -115,27 +115,27 @@ Resposta esperada:
 { "status": "healthy" }
 ```
 
-## Uploads temporários e filesystem
+## Temporary uploads and filesystem
 
-Os uploads são armazenados em `api/uploads` por padrão para o MVP. Esse diretório é adequado para processamento temporário, mas não deve ser tratado como armazenamento permanente.
+Uploads are stored in `api/uploads` by default for the MVP. This directory is suitable for temporary processing and must not be treated as permanent storage.
 
-Em serviços gratuitos, o filesystem pode ser efêmero; por isso, o fluxo ideal é:
+On free services, the filesystem may be ephemeral. The recommended flow is:
 
 1. receber upload
 2. processar
 3. persistir os dados relevantes no PostgreSQL
-4. remover arquivos temporários quando não forem mais necessários
+4. remove temporary files when they are no longer needed
 
-A abstração do storage foi mantida para permitir uma troca futura por object storage (ex.: S3/MinIO) sem quebrar a Clean Architecture.
+The storage abstraction is maintained so it can later be replaced with object storage (for example, S3 or MinIO) without breaking the Clean Architecture.
 
-## Limitações do filesystem gratuito
+## Free filesystem limitations
 
-- o arquivo local pode desaparecer entre reinicializações;
-- não usar o storage local como fonte de verdade para dados permanentes;
-- manter o banco PostgreSQL como armazenamento principal dos dados estruturados.
+- local files may disappear between restarts;
+- do not use local storage as the source of truth for permanent data;
+- keep PostgreSQL as the primary store for structured data.
 
-## Observações finais
+## Final notes
 
-- o projeto não usa Docker;
-- as migrações devem ser executadas explicitamente antes do deploy ou em um pre-deploy command apropriado;
-- não versionar secrets nem arquivos `.env` reais.
+- the project does not use Docker;
+- migrations must be run explicitly before deployment or through an appropriate pre-deploy command;
+- do not commit secrets or real `.env` files.

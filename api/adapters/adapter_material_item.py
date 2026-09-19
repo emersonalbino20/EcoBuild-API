@@ -12,11 +12,11 @@ class AdapterMaterialItem(MaterialItemRepository):
     async def create_material_item(
         self, requests: list[MaterialItem]
     ) -> list[MaterialItem]:
-        """Cria múltiplos itens de materiais em uma única transação (Bulk Insert)."""
+        """Create multiple material items in a single transaction (bulk insert)."""
         if not requests:
             return []
 
-        # 1. Instancia todos os modelos ORM de uma só vez
+        # 1. Instantiate all ORM models in one operation.
         db_items = [
             MaterialItemModel(
                 id=item.id,
@@ -28,13 +28,13 @@ class AdapterMaterialItem(MaterialItemRepository):
             for item in requests
         ]
 
-        # 2. Adiciona a lista inteira à sessão do SQLAlchemy
+        # 2. Add the complete list to the SQLAlchemy session.
         self.db.add_all(db_items)
 
-        # 3. Executa o commit de todos os itens em uma única transação
+        # 3. Commit all items in a single transaction.
         await self.db.commit()
 
-        # 4. Retorna os objetos persistidos
+        # 4. Return the persisted objects.
         return [
             MaterialItem(
                 id=item.id,

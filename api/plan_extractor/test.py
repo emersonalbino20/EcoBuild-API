@@ -11,12 +11,12 @@ sys.path.append(str(root))
 from api.schemas.material import MaterialResponse
 
 async def fetch_available_materials() -> list[MaterialResponse]:
-    """Busca a lista de materiais cadastrados e seus custos/taxas na API local."""
+    """Fetch the registered materials and their costs and rates from the API."""
     async with httpx.AsyncClient() as client:
         response = await client.get('http://127.0.0.1:8000/materials/')
         response.raise_for_status()
         
-        # O Pydantic valida a lista de dicionários automaticamente para o modelo MaterialResponse
+        # Pydantic validates the list of dictionaries against MaterialResponse.
         data = response.json()
         return [MaterialResponse(**item) for item in data]
 

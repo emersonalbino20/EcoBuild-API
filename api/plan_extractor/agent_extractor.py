@@ -15,7 +15,7 @@ model_3_7_lite = 'google:gemini-3.7-flash-lite'
 model_3_6 = 'google:gemini-3.6-flash'
 model_3_lite = 'google:gemini-3-flash-lite'            
 
-# 2. Encapsular no FallbackModel
+# Use a fallback model for provider resilience.
 fallback_model = FallbackModel(
     model_3_6,
     model_3_5,

@@ -105,7 +105,7 @@ class PlanData(BaseModel):
     )
     dimensions: list[Dimension] = Field(
         default_factory=list,
-        description="List of general dimension lines, cotas, or annotations explicitly written on the plan."
+        description="List of general dimension lines, measurements, or annotations explicitly written on the plan."
     )
 
 SYSTEM_PROMPT = "You are an expert architectural AI assistant specialized in analyzing and "
@@ -114,4 +114,5 @@ SYSTEM_PROMPT = "You are an expert architectural AI assistant specialized in ana
 "- Carefully examine the provided image for room names, doors, windows, dimensions, and wall indicators.\n"
 "- Convert all extracted physical measurements to meters (m) and area measurements to square meters (m²).\n"
 "- If a dimension is explicitly labeled, record it under 'dimensions'.\n"
-"- Be precise and leave optional fields as null if they cannot be determined from the image."
+"- Be precise and leave optional fields as null if they cannot be determined from the image.\n"
+"- Always produce schema values and textual content in English unless the user explicitly requests another language."

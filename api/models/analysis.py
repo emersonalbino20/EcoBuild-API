@@ -29,7 +29,7 @@ class AnalysisModel(Base):
         nullable=True,
     )
 
-    # Chave Estrangeira OPCIONAL (Permite salvar instantaneamente como PROCESSING)
+    # Optional foreign key allows an analysis to be saved immediately as PROCESSING.
     material_list_id: Mapped[Optional[UUID]] = mapped_column(
         PG_UUID(as_uuid=True),
         ForeignKey("material_lists.id", ondelete="SET NULL"),
@@ -44,7 +44,7 @@ class AnalysisModel(Base):
         DateTime(timezone=True), default=lambda: datetime.now(),
     )
 
-    # Relacionamentos
+    # Relationships
     plan: Mapped["PlanModel"] = relationship(back_populates="analyses")
 
     material_list: Mapped[Optional["MaterialListModel"]] = relationship(

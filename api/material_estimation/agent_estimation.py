@@ -22,7 +22,7 @@ model_3_7_lite = 'google:gemini-3.7-flash-lite'
 model_3_6 = 'google:gemini-3.6-flash'
 model_3_lite = 'google:gemini-3-flash-lite'            
 
-# 2. Encapsular no FallbackModel
+# Use a fallback model for provider resilience.
 fallback_model = FallbackModel(
     model_3_6,
     model_3_5,
@@ -52,17 +52,17 @@ agent_estimation: Agent[EstimationDeps, MaterialList] = Agent(
     )
 
 @agent_estimation.tool
-async def get_plant_info(ctx: RunContext[EstimationDeps]) -> PlanData:
+async def get_plan_info(ctx: RunContext[EstimationDeps]) -> PlanData:
     img_path: Path = ctx.deps.file_path
     format: str = ctx.deps.format
 
-    print("=== GET PLANT INFO ===", flush=True)
+    print("=== GET PLAN INFO ===", flush=True)
     print(f"img_path: {img_path}", flush=True)
     print(f"exists: {img_path.exists()}", flush=True)
 
     if not img_path.exists():
         raise FileNotFoundError(
-            f"Arquivo de planta não localizado em: {img_path}"
+            f"Architectural plan file not found: {img_path}"
         )
 
     return  await process_architectural_plan(str(img_path), format)
@@ -83,7 +83,7 @@ async def get_estimation(file_path: str, format: str) -> MaterialList:
 
     prompt = (
         "Calculate the full material estimate for the architectural floor plan "
-        "by extracting its data first using the available plant info tool."
+        "by extracting its data first using the available plan information tool."
     )
 
     result = await agent_estimation.run(

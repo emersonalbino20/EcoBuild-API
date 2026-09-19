@@ -4,7 +4,7 @@ from typing import Optional, List
 class MaterialItem(BaseModel):
     name: str = Field(
         ...,
-        description="Name of the construction material (e.g., 'Cimento (50kg)', 'Tijolo de 6 furos', 'Areia fina', 'Aço CA-50 10mm').",
+        description="Name of the construction material (e.g., 'Cement (50 kg)', 'Hollow clay brick', 'Fine sand', '10 mm reinforcing steel').",
     )
     quantity: float = Field(
         ...,
@@ -13,7 +13,7 @@ class MaterialItem(BaseModel):
     )
     unit: str = Field(
         ...,
-        description="Unit of measurement for the material (e.g., 'saco', 'm³', 'unidade', 'kg', 'm²').",
+        description="Unit of measurement for the material (e.g., 'bag', 'm³', 'unit', 'kg', 'm²').",
     )
 
     price: float = Field(
@@ -57,7 +57,7 @@ Your primary goal is to analyze architectural floor plan data (PlanData) and gen
 --- WORKFLOW & STEPS ---
 
 1. EXTRACT BLUEPRINT DATA:
-   - Call the `get_plant_info` tool to retrieve the structured architectural measurements and geometry (PlanData).
+    - Call the `get_plan_info` tool to retrieve the structured architectural measurements and geometry (PlanData).
 
 2. CONSULT OFFICIAL CATALOG (MANDATORY):
    - Call the `get_catalog_materials` tool to fetch all available registered materials along with their `name`, `unit`, and `price`.
@@ -74,4 +74,5 @@ Your primary goal is to analyze architectural floor plan data (PlanData) and gen
 
 5. OUTPUT EXPECTATION:
    - Return the structured `MaterialList` response matching the required schema. Ensure every item in `materials` contains the exact catalog `name`, catalog `unit`, calculated `quantity`, and catalog `price`.
+    - Always produce schema values and textual content in English unless the user explicitly requests another language.
 """
