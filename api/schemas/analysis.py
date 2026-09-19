@@ -19,12 +19,22 @@ class MaterialItemResponse(BaseModel):
     name: str
     quantity: float
     unit: str
+    price: float
 
     model_config = ConfigDict(from_attributes=True)
 
 class MaterialListResponse(BaseModel):
     id: UUID
     notes: Optional[str] = None
+    waste_percentage: float = Field(
+        ..., description="Percentual estimado de desperdício global (ex: 10.5 para 10.5%)"
+    )
+    total_cost: float = Field(
+        ..., description="Custo total estimado dos materiais na moeda local"
+    )
+    co2_saved: float = Field(
+        ..., description="Estimativa de CO2 economizado em kg através de escolhas sustentáveis"
+    )
     materials: List[MaterialItemResponse] = []
 
     model_config = ConfigDict(from_attributes=True)

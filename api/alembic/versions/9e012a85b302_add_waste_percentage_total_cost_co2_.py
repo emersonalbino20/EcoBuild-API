@@ -1,8 +1,8 @@
-"""Change column id uuid to id int
+"""add waste_percentage total_cost co2_saved to material_lists and price column to material_items
 
-Revision ID: 1e8ed9a6cdd0
+Revision ID: 9e012a85b302
 Revises: 
-Create Date: 2026-09-08 22:56:44.598973
+Create Date: 2026-09-19 12:58:55.984404
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '1e8ed9a6cdd0'
+revision: str = '9e012a85b302'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,6 +24,9 @@ def upgrade() -> None:
     op.create_table('material_lists',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('notes', sa.Text(), nullable=True),
+    sa.Column('waste_percentage', sa.Float(), nullable=False),
+    sa.Column('total_cost', sa.Numeric(precision=12, scale=2), nullable=False),
+    sa.Column('co2_saved', sa.Float(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('materials',
@@ -56,6 +59,7 @@ def upgrade() -> None:
     sa.Column('name', sa.String(length=255), nullable=False),
     sa.Column('quantity', sa.Float(), nullable=False),
     sa.Column('unit', sa.String(length=50), nullable=False),
+    sa.Column('price', sa.Numeric(precision=12, scale=2), nullable=False),
     sa.ForeignKeyConstraint(['material_list_id'], ['material_lists.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )

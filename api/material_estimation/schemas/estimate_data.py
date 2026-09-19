@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Optional, List
 
 class MaterialItem(BaseModel):
     name: str = Field(
@@ -15,37 +16,62 @@ class MaterialItem(BaseModel):
         description="Unit of measurement for the material (e.g., 'saco', 'm³', 'unidade', 'kg', 'm²').",
     )
 
+    price: float = Field(
+        ...,
+        description="Unit price extracted directly from the catalog for this material.",
+    )
+
 
 class MaterialList(BaseModel):
-    materials: list[MaterialItem] = Field(
-        default_factory=lambda: list[MaterialItem](),
-        description="Comprehensive list of estimated raw materials based on architectural quantities.",
+    waste_percentage: float = Field(
+        ...,
+        description="Estimated overall waste percentage (e.g., 10.0 for 10%).",
     )
-    notes: str | None = Field(
+    total_cost: float = Field(
+        ...,
+        description="Calculated total cost sum of all materials considering unit prices and quantities.",
+    )
+    co2_saved: float = Field(
+        ...,
+        description="Estimated CO2 savings in kg achieved through sustainable material choices or optimizations.",
+    )
+    notes: Optional[str] = Field(
         default=None,
-        description="Brief engineering technical note or observations about the estimate.",
+        description="Brief engineering technical notes, assumptions, or reasoning behind the estimations.",
+    )
+    materials: List[MaterialItem] = Field(
+        default_factory=list,
+        description="Strict list of materials matched exclusively against the official catalog.",
     )
 
 SYSTEM_PROMPT = """
-You are a construction material matching and identification assistant.
+You are an expert construction material estimation and cost analysis assistant.
 
-Your primary goal is to analyze the floor plan data and generate a list of required construction materials, prioritizing items that exist in the official product catalog.
+Your primary goal is to analyze architectural floor plan data (PlanData) and generate a precise material estimation list, including financial calculations, waste percentages, and environmental metrics.
 
---- WORKFLOW & RULES ---
+--- STRICT CATALOG CONSTRAINT ---
+- You MUST ONLY select materials that exist in the official product catalog returned by `get_catalog_materials`.
+- DO NOT invent, hallucinate, or estimate materials that are not present in the catalog list.
+- If an architectural element requires a material not found in the catalog, select the closest equivalent item available in the catalog.
+
+--- WORKFLOW & STEPS ---
 
 1. EXTRACT BLUEPRINT DATA:
-   - Call the `get_plant_info` tool to obtain the structured architectural data (PlanData).
+   - Call the `get_plant_info` tool to retrieve the structured architectural measurements and geometry (PlanData).
 
 2. CONSULT OFFICIAL CATALOG (MANDATORY):
-   - You MUST ALWAYS call the `get_catalog_materials` tool first to fetch the list of existing materials in the database.
-   - For every required material, check if a matching or equivalent item exists in the fetched catalog.
-   - If a match is found, use the exact `name`, `category`, and `unit` provided by the catalog.
+   - Call the `get_catalog_materials` tool to fetch all available registered materials along with their `name`, `unit`, and `price`.
 
-3. WEB SEARCH FALLBACK (ONLY IF MISSING):
-   - ONLY if a specific required material is NOT found in the official catalog, call the `web_search_material_price` tool to verify the standard market name and unit for that material.
-   - Do NOT guess or invent random material names.
+3. MATCH & CALCULATE MATRICES:
+   - Match each architectural requirement directly to an item from the catalog.
+   - Calculate the required `quantity` based on dimensions (areas, perimeters, volumes).
+   - Use the exact `price` provided in the catalog for each item.
 
-4. OUTPUT EXPECTATION:
-   - Output the list of identified materials with their standard names and units.
-   - Do not attempt to calculate final financial totals or apply wastage rates, as downstream application modules will handle cost and quantity estimations based on your matched material list.
+4. COMPUTE AGGREGATED METRICS:
+   - `total_cost`: Sum of (quantity * catalog price) for all matched material items.
+   - `waste_percentage`: Estimate an appropriate global material waste allowance percentage based on standard engineering practices (e.g., 5.0 to 12.0%).
+   - `co2_saved`: Estimate total CO2 emissions saved (in kg) based on structural choices or eco-friendly material selections available in the catalog.
+
+5. OUTPUT EXPECTATION:
+   - Return the structured `MaterialList` response matching the required schema. Ensure every item in `materials` contains the exact catalog `name`, catalog `unit`, calculated `quantity`, and catalog `price`.
 """

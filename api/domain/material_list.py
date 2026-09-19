@@ -10,6 +10,9 @@ from api.domain.material_item import MaterialItem
 class MaterialList:
     id: UUID = UUID(int=0)
     notes: Optional[str] = None
+    waste_percentage: float = 0.0
+    total_cost: float = 0.0
+    co2_saved: float = 0.0
     materials: list[MaterialItem] = field(
         default_factory=list[MaterialItem]
     )

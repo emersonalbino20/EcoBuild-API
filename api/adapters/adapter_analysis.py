@@ -35,11 +35,13 @@ class AdapterAnalysis(AnalysisRepository):
                 plan_id=analysis.plan_id,
                 parent_analysis_id=analysis.parent_analysis_id,
                 status=analysis.status,
-                # Instancie MaterialListDomain explicitamente
                 material_list=(
                     MaterialList(
                         id=analysis.material_list.id,
                         notes=analysis.material_list.notes,
+                        waste_percentage=float(analysis.material_list.waste_percentage),
+                        total_cost=float(analysis.material_list.total_cost),
+                        co2_saved=float(analysis.material_list.co2_saved),
                         materials=[
                             MaterialItem(
                                 id=item.id,
@@ -47,6 +49,7 @@ class AdapterAnalysis(AnalysisRepository):
                                 name=item.name,
                                 quantity=item.quantity,
                                 unit=item.unit,
+                                price=float(item.price),
                             )
                             for item in analysis.material_list.materials
                         ],
@@ -71,19 +74,20 @@ class AdapterAnalysis(AnalysisRepository):
             .where(AnalysisModel.id == id)
         )
 
-        # Use .scalars() antes de pedir o objeto ORM único
         result = await self.db.execute(query)
         analysis = result.scalars().first()
 
         if analysis is None:
-            return None  # Retorna None conforme a assinatura da porta
+            return None
 
-        # Mapeamento seguro: com selectinload + .scalars(), os dados estão 100% em memória
         material_list_domain = None
         if analysis.material_list:
             material_list_domain = MaterialList(
                 id=analysis.material_list.id,
                 notes=analysis.material_list.notes,
+                waste_percentage=float(analysis.material_list.waste_percentage),
+                total_cost=float(analysis.material_list.total_cost),
+                co2_saved=float(analysis.material_list.co2_saved),
                 materials=[
                     MaterialItem(
                         id=item.id,
@@ -91,6 +95,7 @@ class AdapterAnalysis(AnalysisRepository):
                         name=item.name,
                         quantity=item.quantity,
                         unit=item.unit,
+                        price=float(item.price),
                     )
                     for item in analysis.material_list.materials
                 ],

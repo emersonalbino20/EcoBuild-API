@@ -8,4 +8,5 @@ class MaterialItem:
     material_list_id: UUID = UUID(int=0)
     name: str = ""
     quantity: float = 1.0
-    unit: str = "kg"
+    unit: str = ""
+    price: float = 0.0

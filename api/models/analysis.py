@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import uuid4, UUID
 
 from typing import TYPE_CHECKING, List, Optional
-from sqlalchemy import DateTime, Float, String, Text, ForeignKey
+from sqlalchemy import DateTime, Float, String, Text, Numeric, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
@@ -72,12 +72,22 @@ class MaterialListModel(Base):
 
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    # Relacionamento 1:1 com a análise
+    waste_percentage: Mapped[float] = mapped_column(
+        Float, nullable=False, default=0.0
+    )
+
+    total_cost: Mapped[float] = mapped_column(
+        Numeric(precision=12, scale=2), nullable=False, default=0.0
+    )
+
+    co2_saved: Mapped[float] = mapped_column(
+        Float, nullable=False, default=0.0
+    )
+
     analysis: Mapped[Optional["AnalysisModel"]] = relationship(
         "AnalysisModel", back_populates="material_list"
     )
 
-    # Relacionamento 1:N com os itens individuais
     materials: Mapped[List["MaterialItemModel"]] = relationship(
         "MaterialItemModel",
         back_populates="material_list",
@@ -101,7 +111,9 @@ class MaterialItemModel(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     quantity: Mapped[float] = mapped_column(Float, nullable=False)
     unit: Mapped[str] = mapped_column(String(50), nullable=False)
-
+    price: Mapped[float] = mapped_column(
+        Numeric(precision=12, scale=2), nullable=False, default=0.0
+    )
     material_list: Mapped["MaterialListModel"] = relationship(
         "MaterialListModel", back_populates="materials"
     )
