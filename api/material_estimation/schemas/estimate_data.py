@@ -4,40 +4,39 @@ from typing import Optional, List
 class MaterialItem(BaseModel):
     name: str = Field(
         ...,
-        description="Name of the construction material (e.g., 'Cement (50 kg)', 'Hollow clay brick', 'Fine sand', '10 mm reinforcing steel').",
+        description="Exact name of the material as listed in the official catalog (e.g., 'Portland Cement', 'Clay Brick', 'Construction Sand', 'Steel Rebar').",
     )
     quantity: float = Field(
         ...,
         gt=0,
-        description="Estimated quantity required for the construction project.",
+        description="Estimated quantity required for the construction project in the catalog's unit of measure.",
     )
     unit: str = Field(
         ...,
-        description="Unit of measurement for the material (e.g., 'bag', 'm³', 'unit', 'kg', 'm²').",
+        description="Exact unit of measurement from the official catalog (e.g., 'bag', 'piece', 'cubic_yard', 'ton', 'square_foot').",
     )
-
     price: float = Field(
         ...,
-        description="Unit price extracted directly from the catalog for this material.",
+        description="Exact unit price fetched from the official catalog for this material.",
     )
 
 
 class MaterialList(BaseModel):
     waste_percentage: float = Field(
         ...,
-        description="Estimated overall waste percentage (e.g., 10.0 for 10%).",
+        description="Estimated overall waste percentage (e.g., 5.0 for 5%).",
     )
     total_cost: float = Field(
         ...,
-        description="Calculated total cost sum of all materials considering unit prices and quantities.",
+        description="Sum of (quantity * price) for all items in the materials list.",
     )
     co2_saved: float = Field(
         ...,
-        description="Estimated CO2 savings in kg achieved through sustainable material choices or optimizations.",
+        description="Estimated total CO2 savings in kg achieved through sustainable material choices or optimizations.",
     )
     notes: Optional[str] = Field(
         default=None,
-        description="Brief engineering technical notes, assumptions, or reasoning behind the estimations.",
+        description="Brief engineering technical notes and reasoning behind the estimations.",
     )
     materials: List[MaterialItem] = Field(
         default_factory=list,

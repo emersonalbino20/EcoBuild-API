@@ -82,12 +82,21 @@ async def get_estimation(file_path: str, format: str) -> MaterialList:
     path_obj = Path(file_path)
 
     prompt = (
-        "Calculate the full material estimate for the architectural floor plan "
-        "by extracting its data first using the available plan information tool."
+        "You are a professional construction cost estimator. Perform a complete material estimation:\n"
+        "1. First, call the plan information extraction tool to analyze the architectural floor plan.\n"
+        "2. Call `get_catalog_materials` to retrieve the official catalog containing exact material names, units, and prices.\n"
+        "3. Match every estimated item exclusively against an item in the retrieved catalog.\n"
+        "4. Copy the exact `price` and `unit` from the matched catalog item into each `MaterialItem`.\n"
+        "5. Calculate the `total_cost` as the sum of (quantity * unit price) for all materials."
     )
 
     result = await agent_estimation.run(
-        prompt, deps=EstimationDeps(file_path=path_obj, format=format)
-    )
+    prompt, deps=EstimationDeps(file_path=path_obj, format=format)
+)
 
-    return result.output
+    output: MaterialList = result.output
+
+    recalculated_total = sum(item.quantity * item.price for item in output.materials)
+    output.total_cost = round(recalculated_total, 2)
+
+    return output
