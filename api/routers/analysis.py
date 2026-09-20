@@ -52,7 +52,7 @@ async def generate_material(
             id=list_id,
             notes=agent.notes,
             waste_percentage=agent.waste_percentage,
-            total_cost=agent.waste_percentage,
+            total_cost=agent.total_cost,
             co2_saved=agent.co2_saved
         )
         await create_material_list_case(adapter_list, request_m_list)
