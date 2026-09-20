@@ -1,141 +1,98 @@
-# EcoBuild-AI
+# EcoBuild AI API
 
-## Requirements
+> **This project was developed as part of NextStep Hacks 2026.**
 
-- Python 3.12
-- `uv` installed
-- PostgreSQL 14+ (local or managed)
-- Google AI / Gemini key configured in `GOOGLE_API_KEY`
+[![API Status](https://img.shields.io/badge/API-Live-success)](https://ecobuild-ai.onrender.com/)
+[![Python](https://img.shields.io/badge/Python-3.12-blue)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688)](https://fastapi.tiangolo.com/)
 
-## Local setup
+---
 
-Copy the environment variable template:
+## Overview
 
-```bash
-cp .env.example .env
+**EcoBuild AI API** is a backend service designed to streamline engineering workflows and drive sustainable construction management. By leveraging autonomous **AI Agents**, the system evaluates architectural floor plan images to generate automated material estimates, cost projections, and carbon footprint assessments.
+
+The primary goal is to empower civil engineers, project managers, and builders to make data-driven, eco-friendly decisions early in the design phase—minimizing material waste, reducing overall costs, and mitigating environmental impact.
+
+---
+
+## Problem Statement & Impact
+
+Traditional estimation and structural planning in construction often suffer from manual inaccuracies, leading to severe economic and environmental consequences:
+
+* **High Carbon Footprint:** Inefficient material allocation increases embodied carbon emissions in building projects.
+* **Costly Overruns & Delays:** Poor initial planning and inaccurate quantity takeoffs result in project bottlenecks and budget inflations.
+* **Excessive Waste Generation:** Miscalculated raw material demands directly contribute to landfill accumulation.
+
+EcoBuild AI addresses these challenges by automating floor plan analysis through AI agents that match extracted structural needs against real-time market data and eco-friendly standards.
+
+---
+
+## Key Features
+
+* **Organization Management:** Multi-tenant structure allowing teams to create and manage engineering organizations.
+* **Project & Plan Scaffolding:** Create, attach, and track multiple architectural plans under a single organization.
+* **AI-Powered Floor Plan Analysis:** Automated computer vision and LLM extraction agents analyze uploaded floor plan images to compute required material quantities.
+* **Custom Catalog & Pricing Management:** Allows administrators to seed and manage local construction materials, including current market prices and carbon emission metrics ($CO_2$ factors).
+* **Automated Cost & CO₂ Estimation:** Cross-references plan estimates with the active catalog to generate accurate, deterministic total cost summaries and environmental impact metrics.
+
+---
+
+## Live Demo / Base URL
+
+The API is fully deployed and available for testing at:
+
+**[https://ecobuild-ai.onrender.com/](https://ecobuild-ai.onrender.com/)**
+
+> You can inspect endpoints and interact directly with the live service via the Swagger UI at [`https://ecobuild-ai.onrender.com/docs`](https://ecobuild-ai.onrender.com/docs).
+
+---
+
+## Tech Stack
+
+* **Backend Framework:** FastAPI (Asynchronous Python)
+* **Database & Migration:** PostgreSQL, SQLAlchemy 2.0 (Async Engine), Alembic
+* **AI & Agent Orchestration:** PydanticAI, OpenAI (GPT-4o / Vision models)
+* **Package Management:** `uv` / `pip`
+* **Cloud Infrastructure:** Render
+
+---
+
+## 📐 Architecture & Workflow
+
+The diagram below illustrates how requests flow through the FastAPI backend, PydanticAI vision agents, external AI vision services, and the PostgreSQL database:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Client as Mobile / Web Client
+    participant API as FastAPI Backend
+    participant DB as PostgreSQL (Catalog & Data)
+    participant Agent as PydanticAI Agent
+    participant Vision as AI Vision API (GPT-4o)
+
+    Client->>API: Upload architectural plan image & project parameters
+    API->>DB: Fetch active material catalog (prices, CO₂ factors)
+    DB-->>API: Return registered catalog items
+    
+    API->>Agent: Trigger estimation agent with plan context & catalog data
+    Agent->>Vision: Process plan image via Multimodal LLM
+    Vision-->>Agent: Return extracted structural elements & quantities
+    
+    Agent->>Agent: Match extracted items against catalog & compute CO₂ savings
+    Agent-->>API: Return validated MaterialList schema
+    
+    API->>DB: Store estimation results & project analysis
+    API-->>Client: Return complete material breakdown & cost estimate
 ```
 
-Edit `.env` with the values for your local environment. Do not commit `.env` to Git.
+---
 
-Exemplo:
+## Future Roadmap
 
-```env
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/ecobuild
-GOOGLE_API_KEY=your_google_ai_api_key_here
-API_BASE_URL=http://127.0.0.1:8000
-PORT=8000
-UPLOAD_DIR=api/uploads
-CORS_ALLOWED_ORIGINS=*
-```
+* [ ] **Context-Aware Interactive Chat:** Allow users to converse with AI agents to refine architectural constraints and custom specifications.
+* [ ] **Post-Analysis Discussion Agent:** Dedicated conversational assistant to discuss, critique, and optimize generated material reports.
+* [ ] **Retrieval-Augmented Generation (RAG):** Enable agents to evaluate past project analyses and historical data before generating new estimates.
+* [ ] **Asynchronous Task Notifications:** Implement background workers (Celery/Redis or Webhooks) to notify users via email/push when long-running visual plan analyses are ready.
+* [ ] **Enhanced Route Security:** Implement granular RBAC (Role-Based Access Control) and OAuth2/JWT authentication across all organization endpoints.
 
-## Dependencies with `uv`
-
-```bash
-uv sync --frozen
-```
-
-## Migrations
-
-Before starting the API, apply the Alembic migrations:
-
-```bash
-uv run alembic upgrade head
-```
-
-## Running the API locally
-
-```bash
-uv run uvicorn api.main:app --reload
-```
-
-Ou diretamente:
-
-```bash
-uv run uvicorn api.main:app --host 0.0.0.0 --port $PORT
-```
-
-## Preparing PostgreSQL for production
-
-Use a managed PostgreSQL instance (for example, Render Postgres) and set `DATABASE_URL` to the complete database URL.
-
-Exemplo conceptual:
-
-```env
-DATABASE_URL=postgresql://user:password@host:5432/ecobuild
-```
-
-The application uses SQLAlchemy and asyncpg, so the compatible driver is `postgresql+asyncpg://...` when required. The project automatically converts `postgresql://` URLs to the correct driver.
-
-## Deployment
-
-### Render
-
-No Docker is required. The project is prepared for direct deployment with Python and `uv`.
-
-Build command:
-
-```bash
-uv sync --frozen
-```
-
-Start command:
-
-```bash
-uv run uvicorn api.main:app --host 0.0.0.0 --port $PORT
-```
-
-Health check:
-
-```text
-/health
-```
-
-Configure no Render, em Environment Variables, apenas:
-
-- `DATABASE_URL`
-- `GOOGLE_API_KEY`
-- `API_BASE_URL`
-- `PORT`
-- `UPLOAD_DIR`
-- `CORS_ALLOWED_ORIGINS`
-
-You can also use a simple `render.yaml` file to declare the service as code.
-
-## Health check
-
-The application exposes:
-
-```http
-GET /health
-```
-
-Resposta esperada:
-
-```json
-{ "status": "healthy" }
-```
-
-## Temporary uploads and filesystem
-
-Uploads are stored in `api/uploads` by default for the MVP. This directory is suitable for temporary processing and must not be treated as permanent storage.
-
-On free services, the filesystem may be ephemeral. The recommended flow is:
-
-1. receber upload
-2. processar
-3. persistir os dados relevantes no PostgreSQL
-4. remove temporary files when they are no longer needed
-
-The storage abstraction is maintained so it can later be replaced with object storage (for example, S3 or MinIO) without breaking the Clean Architecture.
-
-## Free filesystem limitations
-
-- local files may disappear between restarts;
-- do not use local storage as the source of truth for permanent data;
-- keep PostgreSQL as the primary store for structured data.
-
-## Final notes
-
-- the project does not use Docker;
-- migrations must be run explicitly before deployment or through an appropriate pre-deploy command;
-- do not commit secrets or real `.env` files.
