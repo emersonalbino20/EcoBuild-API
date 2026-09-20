@@ -61,6 +61,10 @@ async def generate_material(
         )
         await create_material_list_case(adapter_list, request_m_list)
 
+        print(f"waste {agent.waste_percentage}")
+        print(f"total {agent.total_cost}")
+        print(f"co2_saved {agent.co2_saved}")
+
         items_to_create = [
             MaterialItem(
                 id=uuid4(),
@@ -121,9 +125,5 @@ async def create_analysis(
     tasks.add_task(generate_material, request, plan.storage_reference, plan.format, db)
 
     path = Path(plan.storage_reference)
-
-    print("=== CREATE ANALYSIS ===", flush=True)
-    print(f"storage_reference: {plan.storage_reference}", flush=True)
-    print(f"exists: {path.exists()}", flush=True)
 
     return to_response(AnalysisResponse, result)
