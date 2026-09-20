@@ -42,10 +42,6 @@ async def generate_material(
         format: str,
         db: AsyncSession = Depends(get_db)):
 
-    print("=== GENERATE MATERIAL ===", flush=True)
-    print(f"request.id: {request.id}", flush=True)
-    print(f"storage_reference: {storage_reference}", flush=True)
-    print(f"format: {format}", flush=True)
     try:
         agent: AgentResponse = await get_estimation(storage_reference, format)
 
@@ -60,10 +56,6 @@ async def generate_material(
             co2_saved=agent.co2_saved
         )
         await create_material_list_case(adapter_list, request_m_list)
-
-        print(f"waste {agent.waste_percentage}")
-        print(f"total {agent.total_cost}")
-        print(f"co2_saved {agent.co2_saved}")
 
         items_to_create = [
             MaterialItem(
