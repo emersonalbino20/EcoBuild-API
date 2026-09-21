@@ -74,29 +74,31 @@ async def get_catalog_materials() -> list[MaterialResponse]:
     materials = await fetch_available_materials('https://ecobuild-ai.onrender.com/materials/')
     return materials
 
-
 async def get_estimation(file_path: str, format: str) -> MaterialList:
-    print("=== GET ESTIMATION ===", flush=True)
-    print(f"file_path: {file_path}", flush=True)
-
     path_obj = Path(file_path)
 
     prompt = (
-        "You are a professional construction cost estimator. Perform a complete material estimation:\n"
-        "1. First, call the plan information extraction tool to analyze the architectural floor plan.\n"
-        "2. Call `get_catalog_materials` to retrieve the official catalog containing exact material names, units, and prices.\n"
-        "3. Match every estimated item exclusively against an item in the retrieved catalog.\n"
-        "4. Copy the exact `price` and `unit` from the matched catalog item into each `MaterialItem`.\n"
-        "5. Calculate the `total_cost` as the sum of (quantity * unit price) for all materials."
+        "Execution steps:\n"
+        "1. CALL `get_plan_info` FIRST to analyze the provided image file.\n"
+        "2. CHECK if the extracted plan data indicates a valid floor plan (`is_valid_plan == True`).\n"
+        "3. IF `is_valid_plan` is FALSE:\n"
+        "   - DO NOT call `get_catalog_materials`.\n"
+        "   - Return a MaterialList with empty materials list (`materials=[]`), `total_cost=0.0`, `waste_percentage=0.0`, `co2_saved=0.0`.\n"
+        "   - Set `notes` stating clearly that the uploaded file is not a valid architectural plan.\n"
+        "4. IF `is_valid_plan` is TRUE:\n"
+        "   - CALL `get_catalog_materials` to fetch material prices and units.\n"
+        "   - Match extracted quantities against the catalog.\n"
+        "   - Compute total cost and CO2 savings accurately."
     )
 
     result = await agent_estimation.run(
-    prompt, deps=EstimationDeps(file_path=path_obj, format=format)
-)
+        prompt, deps=EstimationDeps(file_path=path_obj, format=format)
+    )
 
     output: MaterialList = result.output
 
-    recalculated_total = sum(item.quantity * item.price for item in output.materials)
-    output.total_cost = round(recalculated_total, 2)
+    if output.materials:
+        recalculated_total = sum(item.quantity * item.price for item in output.materials)
+        output.total_cost = round(recalculated_total, 2)
 
     return output

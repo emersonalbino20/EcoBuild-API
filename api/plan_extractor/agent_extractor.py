@@ -45,7 +45,9 @@ async def process_architectural_plan(img_path: str, format: str) -> PlanData:
         raise Exception("Format not set.")
 
     result = await agent_extractor.run([
-        "Analyze this architectural floor plan and extract all structural elements into the requested schema.",
+        "Analyze this image. If it is a valid architectural floor plan, extract all "
+        "structural elements into the requested schema. However, if the image is NOT "
+        "a valid architectural floor plan, return an empty schema with default or null values."
         BinaryContent(data=img_bytes, media_type=format),
     ])
 

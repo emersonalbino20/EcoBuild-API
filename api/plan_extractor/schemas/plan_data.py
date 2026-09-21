@@ -77,6 +77,16 @@ class Dimension(BaseModel):
 
 
 class PlanData(BaseModel):
+    is_valid_plan: bool = Field(
+        ..., 
+        description="True if the image is a valid architectural floor plan, False otherwise."
+    )
+
+    invalid_reason: Optional[str] = Field(
+        default=None, 
+        description="Explaining why it is not an architectural plan if is_valid_plan is False."
+    )
+
     building_type: str | None = Field(
         default=None,
         description="Type or classification of the building (e.g., 'Residential', 'Commercial', 'Apartment', 'Single Family House')."
