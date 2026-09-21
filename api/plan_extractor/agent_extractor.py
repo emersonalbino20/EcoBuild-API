@@ -47,7 +47,7 @@ async def process_architectural_plan(img_path: str, format: str) -> PlanData:
     result = await agent_extractor.run([
         "Analyze this image. If it is a valid architectural floor plan, extract all "
         "structural elements into the requested schema. However, if the image is NOT "
-        "a valid architectural floor plan, return an empty schema with default or null values."
+        "a valid architectural floor plan, return an empty schema with default or null values.",
         BinaryContent(data=img_bytes, media_type=format),
     ])
 
