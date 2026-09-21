@@ -12,6 +12,9 @@ class AdapterMaterialList(MaterialListRepository):
         db_material_list = MaterialListModel(
             id=request.id,
             notes=request.notes,
+            waste_percentage=request.waste_percentage,
+            total_cost=request.total_cost,
+            co2_saved=request.co2_saved
         )
         self.db.add(db_material_list)
         await self.db.commit()

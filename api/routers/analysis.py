@@ -42,10 +42,6 @@ async def generate_material(
         format: str,
         db: AsyncSession = Depends(get_db)):
 
-    print("=== GENERATE MATERIAL ===", flush=True)
-    print(f"request.id: {request.id}", flush=True)
-    print(f"storage_reference: {storage_reference}", flush=True)
-    print(f"format: {format}", flush=True)
     try:
         agent: AgentResponse = await get_estimation(storage_reference, format)
 
@@ -55,6 +51,9 @@ async def generate_material(
         request_m_list = MaterialList(
             id=list_id,
             notes=agent.notes,
+            waste_percentage=agent.waste_percentage,
+            total_cost=agent.total_cost,
+            co2_saved=agent.co2_saved
         )
         await create_material_list_case(adapter_list, request_m_list)
 
@@ -65,6 +64,7 @@ async def generate_material(
                 name=item.name,
                 quantity=item.quantity,
                 unit=item.unit,
+                price=item.price
             )
             for item in agent.materials
         ]
@@ -117,9 +117,5 @@ async def create_analysis(
     tasks.add_task(generate_material, request, plan.storage_reference, plan.format, db)
 
     path = Path(plan.storage_reference)
-
-    print("=== CREATE ANALYSIS ===", flush=True)
-    print(f"storage_reference: {plan.storage_reference}", flush=True)
-    print(f"exists: {path.exists()}", flush=True)
 
     return to_response(AnalysisResponse, result)

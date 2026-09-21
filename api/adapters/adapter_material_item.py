@@ -24,6 +24,7 @@ class AdapterMaterialItem(MaterialItemRepository):
                 name=item.name,
                 quantity=item.quantity,
                 unit=item.unit,
+                price=item.price
             )
             for item in requests
         ]
